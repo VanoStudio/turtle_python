@@ -30,18 +30,28 @@ paddle.shapesize(stretch_wid=1, stretch_len=5)
 paddle.penup()
 paddle.goto(0, -250)
 
+#Variables
+score = 0
+balls = []
+bricks = []
+game_over_display = None
+skore_display = None
+colors_hp = {"#241965": 1, "#653993": 2, "#9F4094": 3, "#F19406": 4}
+
 #Ball
-ball = turtle.Turtle()
-ball.speed(0)
-ball.shape("circle")
-ball.color("yellow")
-ball.penup()
-ball.goto(0, -200)
-ball.dx = 4
-ball.dy = 4
+def make_ball():
+    global ball
+    ball = turtle.Turtle()
+    ball.speed(0)
+    ball.shape("circle")
+    ball.color("yellow")
+    ball.penup()
+    ball.goto(0, -200)
+    ball.dx = 4
+    ball.dy = 4
 
 #multi ball
-balls = [ball]
+    balls.append(ball)
 
 def create_new_ball(x, y):
     new_ball = turtle.Turtle()
@@ -56,45 +66,48 @@ def create_new_ball(x, y):
     return new_ball
 
 #Score
-score = 0
-skore_display = turtle.Turtle()
-skore_display.hideturtle()
-skore_display.penup()
-skore_display.goto(-420, -50)
-skore_display.color("#F5F5DC")
-skore_display.write(f"Score: {score}", font=("Arial", 14, "bold"))
+def update_score():
+    score = 0
+    skore_display = turtle.Turtle()
+    skore_display.hideturtle()
+    skore_display.penup()
+    skore_display.goto(-420, -50)
+    skore_display.color("#F5F5DC")
+    skore_display.write(f"Score: {score}", font=("Arial", 14, "bold"))
 
 #Bricks
-bricks = []
-colors_hp = {"#241965":1, "#653993":2, "#9F4094":3, "#F19406":4}
-special_color = "red"
-color_order = list(colors_hp.keys())
+def create_bricks():
+    global bricks
+    bricks = []
+    colors_hp = {"#241965":1, "#653993":2, "#9F4094":3, "#F19406":4}
+    special_color = "red"
+    color_order = list(colors_hp.keys())
 
-for row, y in enumerate(range(110, 350, 25)):
-    special_x = random.choice(range(-400, 410, 50))
-    
-    for x in range(-400, 410, 50):
-        is_special = (x == special_x)
+    for row, y in enumerate(range(110, 350, 25)):
+        special_x = random.choice(range(-400, 410, 50))
         
-        if is_special:
-            brick = turtle.Turtle()
-            brick.speed(0)
-            brick.shape("square")
-            brick.color(special_color)
-            brick.shapesize(stretch_wid=1, stretch_len=2)
-            brick.penup()
-            brick.goto(x, y)
-            bricks.append({"turtle": brick, "hp": 1, "special": True})
-        else:
-            warna = color_order[row % len(color_order)]
-            brick = turtle.Turtle()
-            brick.speed(0)
-            brick.shape("square")
-            brick.color(warna)
-            brick.shapesize(stretch_wid=1, stretch_len=2)
-            brick.penup()
-            brick.goto(x, y)
-            bricks.append({"turtle": brick, "hp": colors_hp[warna], "special": False})
+        for x in range(-400, 410, 50):
+            is_special = (x == special_x)
+            
+            if is_special:
+                brick = turtle.Turtle()
+                brick.speed(0)
+                brick.shape("square")
+                brick.color(special_color)
+                brick.shapesize(stretch_wid=1, stretch_len=2)
+                brick.penup()
+                brick.goto(x, y)
+                bricks.append({"turtle": brick, "hp": 1, "special": True})
+            else:
+                warna = color_order[row % len(color_order)]
+                brick = turtle.Turtle()
+                brick.speed(0)
+                brick.shape("square")
+                brick.color(warna)
+                brick.shapesize(stretch_wid=1, stretch_len=2)
+                brick.penup()
+                brick.goto(x, y)
+                bricks.append({"turtle": brick, "hp": colors_hp[warna], "special": False})
 
 #Paddle movement
 def paddle_left():
@@ -130,6 +143,21 @@ def check_paddle_collision(ball):
         ball.sety(-230)
         play_bounce_sfx()
 
+def start_game():
+    global score, balls, bricks, game_over_display
+    if game_over_display:
+        game_over_display.clear()
+    score = 0
+    balls = []
+    bricks = []
+    paddle.goto(0, -250)
+    make_ball()
+    create_bricks()
+    update_score()
+
+start_game()
+
+
 #Main game loop
 while True:
     win.update()
@@ -156,8 +184,17 @@ while True:
                 game_over.hideturtle()
                 game_over.goto(0, 0)
                 game_over.write("GAME OVER", align="center", font=("Arial", 36, "bold"))
+
+                text_Try_again = turtle.Turtle()
+                text_Try_again.color("white")
+                text_Try_again.penup()
+                text_Try_again.hideturtle()
+                text_Try_again.goto(0,-20)
+                text_Try_again.write('Press "Space" to try again', align="center", font=("Arial",15,"normal"))
+                
                 play_game_over_sfx()
                 break
+                
 
     #Brick collision
     for brick in bricks[:]:
