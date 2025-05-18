@@ -36,6 +36,7 @@ balls = []
 bricks = []
 game_over_display = None
 skore_display = None
+game_running = True
 colors_hp = {"#241965": 1, "#653993": 2, "#9F4094": 3, "#F19406": 4}
 
 #Ball
@@ -169,6 +170,7 @@ def game_over():
     text_Try_again.hideturtle()
     text_Try_again.goto(0, -20)
     text_Try_again.write('Press "Space" to try again', align="center", font=("Arial", 15, "normal"))
+    game_running = False
 
 def start_game():
     global score, balls, bricks, game_over_display, skore_display,text_Try_again
@@ -208,6 +210,7 @@ def start_game():
     if skore_display:
         skore_display.clear()
     update_score()
+    game_running = True
 
 win.listen()
 win.onkeypress(start_game,"space")
@@ -217,28 +220,29 @@ start_game()
 
 #Main game loop
 while True:
-    win.update()
-    time.sleep(0.01)  #Reduce CPU
-    
-    #Move all balls
-    for ball in balls[:]:
-        ball.setx(ball.xcor() + ball.dx)
-        ball.sety(ball.ycor() + ball.dy)
+    if game_running:
+        win.update()
+        time.sleep(0.01)  #Reduce CPU
+        
+        #Move all balls
+        for ball in balls[:]:
+            ball.setx(ball.xcor() + ball.dx)
+            ball.sety(ball.ycor() + ball.dy)
 
-        check_wall_collision(ball)
-        check_paddle_collision(ball)
+            check_wall_collision(ball)
+            check_paddle_collision(ball)
 
-        #kalo jatoh
-        if ball.ycor() < -290:
-            ball.hideturtle()
-            balls.remove(ball)
+            #kalo jatoh
+            if ball.ycor() < -290:
+                ball.hideturtle()
+                balls.remove(ball)
 
-            
-            
-            if len(balls) == 0:
-                game_over()
-                play_game_over_sfx()
-                break
+                
+                
+                if len(balls) == 0:
+                    game_over()
+                    play_game_over_sfx()
+                    break
                 
 
     #Brick collision
