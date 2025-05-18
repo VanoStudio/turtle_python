@@ -67,12 +67,15 @@ def create_new_ball(x, y):
 
 #Score
 def update_score():
-    score = 0
-    skore_display = turtle.Turtle()
-    skore_display.hideturtle()
-    skore_display.penup()
-    skore_display.goto(-420, -50)
-    skore_display.color("#F5F5DC")
+    global skore_display
+    if not skore_display:
+        skore_display = turtle.Turtle()
+        skore_display.hideturtle()
+        skore_display.penup()
+        skore_display.goto(-420, -50)
+        skore_display.color("#F5F5DC")
+    
+    skore_display.clear()
     skore_display.write(f"Score: {score}", font=("Arial", 14, "bold"))
 
 #Bricks
@@ -143,17 +146,71 @@ def check_paddle_collision(ball):
         ball.sety(-230)
         play_bounce_sfx()
 
+def game_over():
+    global game_over_display,text_Try_again
+
+    # Jika sudah ada game_over_display, dan text_try_again, jangan buat lagi
+    if game_over_display:
+        return
+    
+
+
+    game_over_display = turtle.Turtle()
+    game_over_display.speed(0)
+    game_over_display.color("red")
+    game_over_display.penup()
+    game_over_display.hideturtle()
+    game_over_display.goto(0, 0)
+    game_over_display.write("GAME OVER", align="center", font=("Arial", 36, "bold"))
+
+    text_Try_again = turtle.Turtle()
+    text_Try_again.color("white")
+    text_Try_again.penup()
+    text_Try_again.hideturtle()
+    text_Try_again.goto(0, -20)
+    text_Try_again.write('Press "Space" to try again', align="center", font=("Arial", 15, "normal"))
+
 def start_game():
-    global score, balls, bricks, game_over_display
+    global score, balls, bricks, game_over_display, skore_display,text_Try_again
+    
+    # Bersihkan tampilan "Game Over" jika ada
     if game_over_display:
         game_over_display.clear()
+        game_over_display.hideturtle()
+        game_over_display = None
+
+    if text_Try_again:
+        text_Try_again.clear()
+        text_Try_again.hideturtle()
+        text_Try_again = None
+    
+    # Hapus semua bola dari layar
+    for ball in balls:
+        ball.hideturtle()
+    balls.clear()
+
+    # Reset skor
     score = 0
-    balls = []
-    bricks = []
+
+    # Reset paddle
     paddle.goto(0, -250)
+
+    # Buat bola baru di posisi awal
     make_ball()
+
+    # Hapus semua brick dan buat ulang
+    for brick in bricks:
+        brick["turtle"].hideturtle()
+    bricks.clear()
     create_bricks()
+
+    # Update score display
+    if skore_display:
+        skore_display.clear()
     update_score()
+
+win.listen()
+win.onkeypress(start_game,"space")
 
 start_game()
 
@@ -175,23 +232,11 @@ while True:
         if ball.ycor() < -290:
             ball.hideturtle()
             balls.remove(ball)
+
+            
             
             if len(balls) == 0:
-                game_over = turtle.Turtle()
-                game_over.speed(0)
-                game_over.color("red")
-                game_over.penup()
-                game_over.hideturtle()
-                game_over.goto(0, 0)
-                game_over.write("GAME OVER", align="center", font=("Arial", 36, "bold"))
-
-                text_Try_again = turtle.Turtle()
-                text_Try_again.color("white")
-                text_Try_again.penup()
-                text_Try_again.hideturtle()
-                text_Try_again.goto(0,-20)
-                text_Try_again.write('Press "Space" to try again', align="center", font=("Arial",15,"normal"))
-                
+                game_over()
                 play_game_over_sfx()
                 break
                 
