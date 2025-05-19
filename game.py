@@ -52,8 +52,8 @@ def make_ball():
     ball.color("yellow")
     ball.penup()
     ball.goto(0, -200)
-    ball.dx = random.choice([-4, 4])
-    ball.dy = 4
+    ball.dx = random.choice([-10, 10])
+    ball.dy = 10
     balls.append(ball)
 
 def create_new_ball(x, y):
