@@ -23,7 +23,7 @@ def play_game_over_sfx():
             winsound.Beep(500 - i * 100, 200)
     threading.Thread(target=sound).start()
 
-# Paddle
+#Paddle
 paddle = turtle.Turtle()
 paddle.speed(0)
 paddle.shape("square")
@@ -56,7 +56,7 @@ def make_ball():
     ball.dy = 10
     balls.append(ball)
 
-def create_new_ball(x, y):
+def create_new_ball(x, y):  
     """Buat bola baru di posisi tertentu."""
     new_ball = turtle.Turtle()
     new_ball.speed(0)
